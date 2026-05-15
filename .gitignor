@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# FastAPI / Environment
+.env
+.flaskenv
+
+# Project specific (PDF Compressor)
+uploads/*
+!uploads/.gitkeep
+
+# Docker
+.dockerignore
