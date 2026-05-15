@@ -1,4 +1,5 @@
 # Project: PDF Compression Web Service
+**English version** | [Русская версия](README.md)
 
 ### General Description
 The goal of this project is to create a simple and fast web service for reducing PDF file sizes. The service helps people send large documents through platforms that have file size limits, such as **Gmail**.
