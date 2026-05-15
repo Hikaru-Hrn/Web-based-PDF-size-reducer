@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PDF Compressor — Сжать PDF онлайн</title>
+        <!-- Подключаем внешний CSS файл -->
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', path='/style.css') }}"
+        />
+    </head>
+    <body>
+        <div class="container">
+            <h1>Сжатие PDF</h1>
+            <p>Уменьшите размер файла для Gmail за пару секунд</p>
+
+            <form
+                action="/compress"
+                method="post"
+                enctype="multipart/form-data"
+            >
+                <div class="drop-zone" id="drop-zone">
+                    <span class="drop-zone__prompt"
+                        >Перетащите файл сюда или кликните для выбора</span
+                    >
+                    <input
+                        type="file"
+                        name="file"
+                        class="drop-zone__input"
+                        id="file-input"
+                        accept=".pdf"
+                        required
+                    />
+                </div>
+
+                <button type="submit" class="btn">Сжать файл</button>
+            </form>
+
+            {% if message %}
+            <div
+                class="status-msg {% if success %}success{% else %}error{% endif %}"
+            >
+                {{ message }}
+            </div>
+            {% endif %} {% if download_link %}
+            <a
+                href="{{ download_link }}"
+                style="
+                    display: block;
+                    margin-top: 1rem;
+                    color: var(--primary-color);
+                    font-weight: bold;
+                "
+            >
+                ⬇️ Скачать сжатый PDF
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- JS пока оставим здесь, так как он специфичен для этой формы,
+         но его тоже можно вынести в static/script.js при желании -->
+        <script>
+            const dropZone = document.getElementById("drop-zone");
+            const fileInput = document.getElementById("file-input");
+
+            dropZone.addEventListener("click", () => fileInput.click());
+
+            fileInput.addEventListener("change", () => {
+                if (fileInput.files.length) {
+                    dropZone.querySelector(".drop-zone__prompt").textContent =
+                        `Выбран файл: ${fileInput.files[0].name}`;
+                }
+            });
+
+            dropZone.addEventListener("dragover", (e) => {
+                e.preventDefault();
+                dropZone.classList.add("drag-over");
+            });
+
+            ["dragleave", "dragend"].forEach((type) => {
+                dropZone.addEventListener(type, () =>
+                    dropZone.classList.remove("drag-over"),
+                );
+            });
+
+            dropZone.addEventListener("drop", (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    dropZone.querySelector(".drop-zone__prompt").textContent =
+                        `Выбран файл: ${e.dataTransfer.files[0].name}`;
+                }
+                dropZone.classList.remove("drag-over");
+            });
+        </script>
+    </body>
+</html>
