@@ -2,60 +2,57 @@
 <html lang="ru">
     <head>
         <meta charset="UTF-8" />
-        <title>PDF Compressor</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PDF Optimizer PRO</title>
+        <link rel="stylesheet" href="/static/style.css" />
         <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
             rel="stylesheet"
-            href="{{ url_for('static', path='/style.css') }}"
         />
     </head>
     <body>
-        <div class="container">
-            <h1>Сжатие PDF</h1>
-            <p>Оптимизация размера</p>
+        <div class="glass-container">
+            <header>
+                <h1>PDF Optimizer</h1>
+                <p class="subtitle">
+                    Уменьшите размер файла без потери качества
+                </p>
+            </header>
 
-            <form
-                action="/compress"
-                method="post"
-                enctype="multipart/form-data"
-            >
-                <div class="drop-zone" id="drop-zone">
-                    <span class="drop-zone__prompt">Перетащите PDF сюда</span>
-                    <input
-                        type="file"
-                        name="file"
-                        class="drop-zone__input"
-                        id="file-input"
-                        accept=".pdf"
-                        required
-                    />
+            <main>
+                <div class="settings-group">
+                    <label for="quality">Степень сжатия:</label>
+                    <select id="quality" class="custom-select">
+                        <option value="low">
+                            Максимальное (для Email, 72 dpi)
+                        </option>
+                        <option value="medium" selected>
+                            Сбалансированное (Эл. книги, 150 dpi)
+                        </option>
+                        <option value="high">
+                            Минимальное (Печать, 300 dpi)
+                        </option>
+                    </select>
                 </div>
-                <button type="submit" class="btn">Сжать сейчас</button>
-            </form>
 
-            {% if message %}
-            <div
-                class="status-msg {% if success %}success{% else %}error{% endif %}"
-            >
-                {{ message }}
-            </div>
-            {% endif %} {% if download_link %}
-            <a href="{{ download_link }}" class="download-btn"
-                >⬇️ Скачать результат</a
-            >
-            {% endif %}
+                <div class="drop-zone" id="drop-zone">
+                    <div class="upload-icon">📄</div>
+                    <input type="file" id="file-input" hidden accept=".pdf" />
+                    <p id="file-name">
+                        Перетащите PDF сюда или кликните для выбора
+                    </p>
+                    <p class="file-limit">Максимальный размер: 300MB</p>
+                </div>
+
+                <button onclick="startCompression()" class="main-btn">
+                    <span class="btn-text">Оптимизировать</span>
+                </button>
+
+                <div id="status-area" class="status-area">
+                    <!-- Сюда JS будет вставлять статус и кнопку скачивания -->
+                </div>
+            </main>
         </div>
-
-        <script>
-            const dropZone = document.getElementById("drop-zone");
-            const fileInput = document.getElementById("file-input");
-
-            dropZone.addEventListener("click", () => fileInput.click());
-            fileInput.addEventListener("change", () => {
-                if (fileInput.files.length) {
-                    dropZone.querySelector(".drop-zone__prompt").textContent =
-                        fileInput.files[0].name;
-                }
-            });
-        </script>
+        <script src="/static/script.js"></script>
     </body>
 </html>

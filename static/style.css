@@ -1,58 +1,163 @@
+:root {
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+}
+
 body {
-    font-family: sans-serif;
-    background-color: #f0f2f5;
+    font-family: "Inter", sans-serif;
+    background: var(--bg-gradient);
+    height: 100vh;
+    margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    color: var(--text-main);
+}
+
+.glass-container {
+    background: var(--glass-bg);
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+}
+
+h1 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 28px;
+}
+.subtitle {
+    color: var(--text-muted);
+    margin: 8px 0 32px;
+    font-size: 14px;
+}
+
+.settings-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.settings-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+}
+
+.custom-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.drop-zone {
+    border: 2px dashed #d1d5db;
+    border-radius: 16px;
+    padding: 40px 20px;
+    margin-bottom: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+}
+
+.drop-zone:hover,
+.drop-zone.drag-over {
+    border-color: var(--primary);
+    background: #f5f3ff;
+}
+
+.upload-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+#file-name {
+    font-weight: 500;
     margin: 0;
 }
-.container {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 400px;
+.file-limit {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
 }
-.drop-zone {
-    border: 2px dashed #ccc;
-    padding: 40px 20px;
-    margin: 20px 0;
-    cursor: pointer;
-}
-.drop-zone:hover {
-    border-color: #2563eb;
-}
-.drop-zone__input {
-    display: none;
-}
-.btn {
-    background: #2563eb;
+
+.main-btn {
+    background: var(--primary);
     color: white;
     border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    cursor: pointer;
+    padding: 16px;
+    border-radius: 12px;
     width: 100%;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        transform 0.1s,
+        background 0.2s;
 }
-.status-msg {
-    margin-top: 15px;
-    padding: 10px;
-    border-radius: 4px;
+
+.main-btn:hover {
+    background: var(--primary-hover);
 }
-.success {
-    background: #e8f5e9;
-    color: #2e7d32;
+.main-btn:active {
+    transform: scale(0.98);
 }
-.error {
-    background: #ffebee;
-    color: #c62828;
+
+.status-area {
+    margin-top: 24px;
+    min-height: 50px;
 }
-.download-btn {
-    display: block;
-    margin-top: 20px;
-    color: #2563eb;
+
+/* Анимация лоадера */
+.loader {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #e5e7eb;
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.download-link {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #10b981;
+    color: white;
     text-decoration: none;
-    font-weight: bold;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-top: 10px;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

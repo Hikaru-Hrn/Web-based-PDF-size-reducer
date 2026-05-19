@@ -1,17 +1,14 @@
 import os
-import shutil
 import uuid
 
 from fastapi import FastAPI, File, Form, Request, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from .utils import compress_pdf
+from .worker import celery_app, compression_task
 
 app = FastAPI()
-
-# Монтируем статику и шаблоны
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
@@ -20,55 +17,36 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
 @app.get("/")
-async def main_page(request: Request):
+async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.post("/compress")
-async def handle_compression(request: Request, file: UploadFile = File(...)):
-    if not file.filename.lower().endswith(".pdf"):
-        return templates.TemplateResponse(
-            "index.html",
-            {
-                "request": request,
-                "message": "Ошибка: Пожалуйста, выберите PDF файл.",
-                "success": False,
-            },
-        )
-
+async def start_compression(file: UploadFile = File(...), quality: str = Form("low")):
     file_id = str(uuid.uuid4())
-    input_path = os.path.join(UPLOAD_DIR, f"raw_{file_id}.pdf")
-    output_path = os.path.join(UPLOAD_DIR, f"compressed_{file_id}.pdf")
+    input_path = os.path.join(UPLOAD_DIR, f"in_{file_id}.pdf")
+    output_path = os.path.join(UPLOAD_DIR, f"out_{file_id}.pdf")
 
-    # Сохраняем загруженный файл
-    with open(input_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    with open(input_path, "wb") as f:
+        f.write(await file.read())
 
-    # Сжимаем
-    success = compress_pdf(input_path, output_path)
-
-    if success:
-        return templates.TemplateResponse(
-            "index.html",
-            {
-                "request": request,
-                "message": f"Файл {file.filename} успешно сжат!",
-                "success": True,
-                "download_link": f"/download/{file_id}",
-            },
-        )
-    else:
-        return templates.TemplateResponse(
-            "index.html",
-            {
-                "request": request,
-                "message": "Произошла ошибка при обработке файла.",
-                "success": False,
-            },
-        )
+    # Отправляем задачу в очередь
+    task = compression_task.delay(input_path, output_path, quality)
+    return JSONResponse({"task_id": task.id})
 
 
-@app.get("/download/{file_id}")
-async def download_file(file_id: str):
-    path = os.path.join(UPLOAD_DIR, f"compressed_{file_id}.pdf")
-    return FileResponse(path, filename="compressed_document.pdf")
+@app.get("/status/{task_id}")
+async def get_status(task_id: str):
+    task = celery_app.AsyncResult(task_id)
+    if task.state == "SUCCESS":
+        return {"status": "SUCCESS", "download_url": f"/download/{task_id}"}
+    elif task.state == "FAILURE":
+        return {"status": "FAILURE", "error": str(task.info)}
+    return {"status": task.state}
+
+
+@app.get("/download/{task_id}")
+async def download(task_id: str):
+    task = celery_app.AsyncResult(task_id)
+    path = task.result.get("output")
+    return FileResponse(path, filename="compressed.pdf")
