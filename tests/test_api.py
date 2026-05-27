@@ -37,6 +37,6 @@ def test_upload_valid_pdf(mock_delay):
 
 # Проверка поведения API при отсутствии файла в запросе.
 def test_upload_no_file():
-    response = client.post("/", data={"quality": "low"})
+    response = client.post("/compress", data={"quality": "low"})
 
     assert response.status_code == 422
