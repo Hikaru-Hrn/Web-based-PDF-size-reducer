@@ -17,3 +17,5 @@ uploads/*
 
 # Docker
 .dockerignore
+
+packages/core/pdf_core.egg-info/
