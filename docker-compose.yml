@@ -2,10 +2,9 @@ services:
   web:
     build:
       context: .
-    # Убрано: network_mode: host
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     ports:
-      - "8000:8000" # Пробрасывает порт 8000 контейнера на порт 8000 вашего Windows
+      - "8000:8000" # Пробрасывает порт 8000
     volumes:
       - ./uploads:/app/uploads
     depends_on:
@@ -14,7 +13,6 @@ services:
   worker:
     build:
       context: .
-    # Убрано: network_mode: host
     command: celery -A app.worker.celery_app worker --loglevel=info
     environment:
       - REDIS_URL=redis://redis:6379/0
@@ -25,17 +23,13 @@ services:
 
   redis:
     image: redis:7-alpine
-    # Убрано: network_mode: host
-    # Порт 6379 доступен другим контейнерам автоматически. 
-    # Если нужен доступ с хоста (Windows), раскомментируйте следующие 2 строки:
     ports:
       - "6379:6379"
 
   nginx:
     image: nginx:latest
-    # Убрано: network_mode: host
     ports:
-      - "80:80" # Nginx будет доступен просто по http://localhost
+      - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ./static:/app/static
