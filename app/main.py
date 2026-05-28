@@ -8,7 +8,11 @@ from fastapi.templating import Jinja2Templates
 
 from .worker import celery_app, compression_task
 
-app = FastAPI()
+app = FastAPI(
+    title="PDF Size Reducer API",
+    description="Асинхронный сервис для сжатия PDF-файлов с использованием Celery и Ghostscript.",
+    version="1.0.0"
+)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
